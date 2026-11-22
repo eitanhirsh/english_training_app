@@ -182,7 +182,7 @@
 <body>
 
 <header class="app-header">
-    <h1 class="app-title">🇬🇧 English Master <small style="font-size:0.7rem; color:#64748b;">v5</small></h1>
+    <h1 class="app-title">🇬🇧 English Master <small style="font-size:0.7rem; color:#64748b;">v6</small></h1>
     <div class="streak-badge" id="headerStats">טוען...</div>
 </header>
 
@@ -246,7 +246,7 @@
         </div>
 
         <div id="practiceLoader" class="card loader" style="display:none;">
-            ⏳ מבקש מ-Gemini להכין משפטים חדשים במיוחד בשבילך...
+            ⏳ מכין משפטים חדשים במיוחד בשבילך...
         </div>
     </section>
 
@@ -318,7 +318,7 @@
     <section id="screen-settings" class="screen">
         <div class="card">
             <h2>🔑 הגדרות Gemini API ומודל אוטומטי</h2>
-            <p class="sub">הזן את מפתח ה-API ולחץ על "שמור ובצע בדיקת יצירה חיה" כדי למצוא מודל שפועל מקצה לקצה.</p>
+            <p class="sub">ברירת המחדל הוגדרה למודל המהיר והפנוי <code>gemini-flash-lite-latest</code> שעובד מיד ללא המתנה.</p>
             
             <label class="field-label" for="apiKeyInput">מפתח API (API Key):</label>
             <input type="password" id="apiKeyInput" placeholder="AIzaSy... / AQ..." style="direction:ltr;">
@@ -326,7 +326,7 @@
             <label class="field-label" for="modelSelect">מודל מועדף:</label>
             <select id="modelSelect" class="full-select" style="direction:ltr;" onchange="onModelSelectChange()"></select>
 
-            <button class="btn btn-primary" onclick="saveAndTestLiveGeneration()">⚡ שמור ובצע בדיקת יצירה חיה</button>
+            <button class="btn btn-primary" onclick="saveAndTestLiveGeneration()">⚡ שמור ובצע בדיקה מהירה</button>
             <div id="apiSavedMsg" style="font-size:0.9rem; font-weight:700; margin-top:10px; display:none; white-space:pre-wrap;"></div>
         </div>
 
@@ -386,7 +386,7 @@
 </nav>
 
 <script>
-    const DEFAULT_MODEL = "gemini-3.8-flash";
+    const DEFAULT_MODEL = "gemini-flash-lite-latest";
 
     const INITIAL_WORDS = [
         { en: "celebrate", he: "לחגוג" }, { en: "such", he: "כזה" }, { en: "rather strange", he: "די מוזר" },
@@ -418,10 +418,52 @@
     let state = {
         words: [],
         quizHistory: [],
-        settings: { apiKey: "", modelName: DEFAULT_MODEL, availableModels: [], threshold: 3 }
+        settings: { apiKey: "", modelName: DEFAULT_MODEL, availableModels: [], threshold: 3, migratedV6: true }
     };
 
     let fcDeck = [], fcIndex = 0, fcEnToHe = true, currentListTab = 'active', activeQuiz = [], pendingScanned = [], popTimer = null;
+
+    // סכמות JSON קשיחות שמונעות ב-100% שגיאות JSON Parse Error בגלל גרשיים בעברית
+    const SCHEMAS = {
+        quiz: {
+            type: "ARRAY",
+            items: {
+                type: "OBJECT",
+                properties: {
+                    id: { type: "NUMBER" },
+                    answer: { type: "STRING" },
+                    before: { type: "STRING" },
+                    after: { type: "STRING" }
+                },
+                required: ["id", "answer", "before", "after"]
+            }
+        },
+        wordList: {
+            type: "ARRAY",
+            items: {
+                type: "OBJECT",
+                properties: {
+                    en: { type: "STRING" },
+                    he: { type: "STRING" }
+                },
+                required: ["en", "he"]
+            }
+        },
+        singleTrans: {
+            type: "OBJECT",
+            properties: {
+                he: { type: "STRING" }
+            },
+            required: ["he"]
+        },
+        ping: {
+            type: "OBJECT",
+            properties: {
+                status: { type: "STRING" }
+            },
+            required: ["status"]
+        }
+    };
 
     function loadState() {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -429,10 +471,15 @@
             state = JSON.parse(raw);
             if (!state.settings) state.settings = {};
             if (!Array.isArray(state.settings.availableModels)) state.settings.availableModels = [];
-            if (!state.settings.modelName) state.settings.modelName = DEFAULT_MODEL;
+            // מעבר אוטומטי חד-פעמי למודל הפנוי והמהיר שהוכח שעובד אצל המשתמש
+            if (!state.settings.migratedV6) {
+                state.settings.modelName = DEFAULT_MODEL;
+                state.settings.migratedV6 = true;
+                saveState();
+            }
         } else {
             state.words = INITIAL_WORDS.map((w, i) => ({ id: Date.now() + i, en: w.en, he: w.he, streak: 0, mistakes: 0, mastered: false }));
-            state.settings = { apiKey: "", modelName: DEFAULT_MODEL, availableModels: [], threshold: 3 };
+            state.settings = { apiKey: "", modelName: DEFAULT_MODEL, availableModels: [DEFAULT_MODEL], threshold: 3, migratedV6: true };
             saveState();
         }
         document.getElementById('apiKeyInput').value = state.settings.apiKey || "";
@@ -449,17 +496,13 @@
 
     function renderModelDropdown() {
         const sel = document.getElementById('modelSelect');
-        const list = state.settings.availableModels && state.settings.availableModels.length > 0
-            ? state.settings.availableModels
-            : [state.settings.modelName || DEFAULT_MODEL];
+        let list = state.settings.availableModels && state.settings.availableModels.length > 0
+            ? [...state.settings.availableModels]
+            : [DEFAULT_MODEL];
+        if (!list.includes(DEFAULT_MODEL)) list.unshift(DEFAULT_MODEL);
 
         sel.innerHTML = list.map(m => `<option value="${m}">${m}</option>`).join('');
-        if (list.includes(state.settings.modelName)) {
-            sel.value = state.settings.modelName;
-        } else {
-            state.settings.modelName = list[0];
-            sel.value = list[0];
-        }
+        sel.value = list.includes(state.settings.modelName) ? state.settings.modelName : DEFAULT_MODEL;
     }
 
     function onModelSelectChange() {
@@ -468,28 +511,30 @@
     }
 
     async function discoverModelsFromGoogle(key) {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models`, {
+        let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models`, {
             method: 'GET',
             headers: { 'x-goog-api-key': key }
         });
         if (!res.ok) {
-            // ניסיון גיבוי עם פרמטר ב-URL
-            const res2 = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
-            if (!res2.ok) throw new Error("שגיאת גישה לרשימת מודלים (" + res2.status + ")");
-            return parseModelsList(await res2.json());
+            res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
+            if (!res.ok) throw new Error("שגיאת גישה לרשימת מודלים (" + res.status + ")");
         }
-        return parseModelsList(await res.json());
-    }
-
-    function parseModelsList(data) {
+        const data = await res.json();
         const valid = (data.models || [])
             .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
             .map(m => m.name.replace(/^models\//, ''))
-            .filter(id => /^gemini-[0-9]/.test(id) && !/embedding|imagen|veo|tts|audio|live|aqa|robotics|computer-use|learnlm|thinking|image/i.test(id));
+            .filter(id => id.startsWith("gemini-") && !/embedding|imagen|veo|tts|audio|live|aqa|robotics|computer-use|learnlm|thinking|image/i.test(id));
 
+        // תעדוף מודלי flash-lite ו-flash-latest שעובדים מיידית ללא עומס
         valid.sort((a, b) => {
-            const score = (s) => (s.includes("flash") && !s.includes("preview") ? 0 : s.includes("flash") ? 1 : 2);
-            return score(a) - score(b) || b.localeCompare(a);
+            const rank = (s) => {
+                if (s === "gemini-flash-lite-latest") return 0;
+                if (s.includes("flash-lite")) return 1;
+                if (s === "gemini-flash-latest") return 2;
+                if (s.includes("flash") && !s.includes("preview")) return 3;
+                return 4;
+            };
+            return rank(a) - rank(b) || b.localeCompare(a);
         });
 
         if (valid.length > 0) {
@@ -501,45 +546,31 @@
         return valid;
     }
 
-    // שליחת בקשת POST בודדת למודל (מנסה Header ואם נחסם ב-405/CORS מנסה Query Param וכן v1/Interactions)
-    async function trySingleModelRequest(key, model, parts) {
+    async function trySingleModelRequest(key, model, parts, schema) {
         const cleanModel = encodeURIComponent(model.replace(/^models\//, '').trim());
+        const genConfig = {
+            responseMimeType: "application/json",
+            temperature: 0.7
+        };
+        if (schema) genConfig.responseSchema = schema;
+
         const payload = JSON.stringify({
             contents: [{ parts }],
-            generationConfig: { responseMimeType: "application/json", temperature: 0.7 }
+            generationConfig: genConfig
         });
 
-        // שיטה 1: Header תקני של גוגל (מונע חסימות URL של פיירוול/ראוטר)
         let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
             body: payload
         });
 
-        // שיטה 2: אם הוחזר 405, ננסה ב-v1 רגיל או עם פרמטר key ב-URL
         if (res.status === 405) {
             res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${encodeURIComponent(key)}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: payload
             });
-        }
-
-        // שיטה 3: תמיכה ב-Interactions API החדש למקרה שהמפתח החדש (AQ.) מחייב אותו
-        if (res.status === 405 || res.status === 401 || res.status === 403) {
-            const interRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/interactions?key=${encodeURIComponent(key)}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: cleanModel,
-                    input: parts[0].text
-                })
-            });
-            if (interRes.ok) {
-                const interData = await interRes.json();
-                const outText = interData.outputs?.[0]?.text || interData.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (outText) return { ok: true, text: outText };
-            }
         }
 
         if (res.ok) {
@@ -557,15 +588,14 @@
         const msg = document.getElementById('apiSavedMsg');
         msg.style.display = 'block';
         msg.style.color = 'var(--primary)';
-        msg.textContent = "⏳ שלב 1/2: שולף מודלים מהחשבון שלך...";
+        msg.textContent = "⏳ בודק מודלים ומבצע יצירת ניסיון מהירה...";
 
         try {
-            const models = await discoverModelsFromGoogle(key);
-            msg.textContent = `⏳ שלב 2/2: נמצאו ${models.length} מודלים. מבצע בדיקת שליחה חיה (POST)...`;
-            const testOut = await callGemini('Return this exact JSON: {"status": "ok"}');
-            if (testOut && testOut.status === "ok") {
+            await discoverModelsFromGoogle(key);
+            const testOut = await callGemini('Return status ok', SCHEMAS.ping);
+            if (testOut && testOut.status) {
                 msg.style.color = 'var(--success)';
-                msg.textContent = `✅ עובד מקצה לקצה! המודל הפעיל שנבחר: ${state.settings.modelName}\nאפשר לעבור ללשונית "תרגול"!`;
+                msg.textContent = `✅ עובד במהירות שיא! מודל פעיל: ${state.settings.modelName}\nאפשר לעבור ללשונית "תרגול"!`;
             }
         } catch (err) {
             msg.style.color = 'var(--danger)';
@@ -573,14 +603,27 @@
         }
     }
 
-    function extractJson(rawText) {
-        const cleaned = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
-        const firstBracket = cleaned.search(/[\[{]/);
-        const sliced = firstBracket > 0 ? cleaned.slice(firstBracket) : cleaned;
-        return JSON.parse(sliced);
+    function safeParseJson(rawText) {
+        let cleaned = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+        try {
+            return JSON.parse(cleaned);
+        } catch (e) {
+            // חילוץ בטוח של המערך או האובייקט החיצוני במקרה של תווים מיותרים מסביב
+            const arrStart = cleaned.indexOf('[');
+            const arrEnd = cleaned.lastIndexOf(']');
+            if (arrStart !== -1 && arrEnd > arrStart) {
+                return JSON.parse(cleaned.slice(arrStart, arrEnd + 1));
+            }
+            const objStart = cleaned.indexOf('{');
+            const objEnd = cleaned.lastIndexOf('}');
+            if (objStart !== -1 && objEnd > objStart) {
+                return JSON.parse(cleaned.slice(objStart, objEnd + 1));
+            }
+            throw e;
+        }
     }
 
-    async function callGemini(promptText, base64Image = null, mimeType = null, loaderEl = null) {
+    async function callGemini(promptText, schema = null, base64Image = null, mimeType = null, loaderEl = null) {
         const key = (state.settings.apiKey || "").trim();
         if (!key) {
             alert("יש להזין מפתח Gemini API במסך 'הגדרות' לפני שימוש בפעולה זו.");
@@ -588,13 +631,9 @@
             throw new Error("Missing API Key");
         }
 
-        if (!state.settings.availableModels || state.settings.availableModels.length === 0) {
-            try { await discoverModelsFromGoogle(key); } catch (_) {}
-        }
-
         const preferred = ((state.settings.modelName || DEFAULT_MODEL).trim()).replace(/^models\//, '');
-        const others = (state.settings.availableModels || []).filter(m => m !== preferred);
-        const queue = [preferred, ...others.slice(0, 6)];
+        const fallbacks = ["gemini-flash-lite-latest", "gemini-flash-latest", ...(state.settings.availableModels || [])];
+        const queue = [preferred, ...fallbacks.filter(m => m !== preferred)].slice(0, 6);
 
         const parts = [{ text: promptText }];
         if (base64Image) parts.push({ inline_data: { mime_type: mimeType, data: base64Image } });
@@ -603,27 +642,25 @@
         for (let i = 0; i < queue.length; i++) {
             const model = queue[i];
             if (i > 0 && loaderEl) {
-                loaderEl.textContent = `⏳ מנסה מודל חלופי (${model})...`;
+                loaderEl.textContent = `⏳ מנסה מודל מהיר (${model})...`;
             }
 
-            const attempt = await trySingleModelRequest(key, model, parts);
+            const attempt = await trySingleModelRequest(key, model, parts, schema);
             if (attempt.ok) {
                 if (state.settings.modelName !== model) {
                     state.settings.modelName = model;
                     saveState();
                     renderModelDropdown();
                 }
-                return extractJson(attempt.text);
+                return safeParseJson(attempt.text);
             }
 
             debugLog.push(`${model} -> HTTP ${attempt.status}`);
-
-            // דילוג אוטומטי על 405, 503, 429, 404, 400
             if ([405, 503, 429, 404, 400].includes(attempt.status)) {
-                await new Promise(r => setTimeout(r, 800));
+                await new Promise(r => setTimeout(r, 500));
                 continue;
             } else {
-                throw new Error(`שגיאה ממודל ${model} (${attempt.status}):\n${attempt.errorText.slice(0, 220)}`);
+                throw new Error(`שגיאה ממודל ${model} (${attempt.status}):\n${attempt.errorText.slice(0, 200)}`);
             }
         }
 
@@ -749,6 +786,7 @@
         rebuildFlashcards();
     }
 
+    // --- מסך 2: תרגול משפטים סופר-מהיר עם סכמת JSON קשיחה ---
     async function startNewPractice(fromArchive) {
         let pool = state.words.filter(w => fromArchive ? w.mastered : !w.mastered);
         if (pool.length === 0) {
@@ -762,20 +800,17 @@
         const loaderEl = document.getElementById('practiceLoader');
         document.getElementById('practiceArea').style.display = 'none';
         document.getElementById('scoreBanner').style.display = 'none';
-        loaderEl.textContent = "⏳ מבקש מ-Gemini להכין משפטים חדשים במיוחד בשבילך...";
+        loaderEl.textContent = "⏳ מכין משפטים חדשים במיוחד בשבילך (כ-3 שניות)...";
         loaderEl.style.display = 'block';
 
         try {
-            const wordsPayload = selected.map(w => ({ id: w.id, en: w.en, he: w.he }));
+            const wordsPayload = selected.map(w => ({ id: w.id, en: w.en }));
             const prompt = `You are an English teacher creating a fill-in-the-blank exercise for an Israeli middle-school student.
-Create EXACTLY one NEW, clear, everyday English sentence for each item in this list: ${JSON.stringify(wordsPayload)}.
-Rules:
-1. Keep surrounding words relatively simple (A2-B1 level) so the student can understand the context.
-2. Split each sentence into "before" (text before the target word/phrase) and "after" (text after the target word/phrase). Do NOT include the target word in "before" or "after".
-3. Also provide "glosses": a dictionary object mapping EVERY single lowercase word used in "before" and "after" (stripped of punctuation) to its concise Hebrew translation in this exact context.
-Return ONLY a JSON array of objects with keys: "id" (number), "answer" (exact string from input 'en'), "before" (string), "after" (string), "glosses" (object).`;
+Create EXACTLY one NEW, clear, simple everyday English sentence (A2-B1 level) for each item in this list: ${JSON.stringify(wordsPayload)}.
+Split each sentence into "before" (text before the target word/phrase) and "after" (text after the target word/phrase). Do NOT include the target word itself in "before" or "after".
+Keep "answer" identical to the input "en".`;
 
-            activeQuiz = await callGemini(prompt, null, null, loaderEl);
+            activeQuiz = await callGemini(prompt, SCHEMAS.quiz, null, null, loaderEl);
             renderPracticeQuiz();
         } catch (err) {
             if (err.message !== "Missing API Key") alert(err.message);
@@ -839,32 +874,35 @@ Return ONLY a JSON array of objects with keys: "id" (number), "answer" (exact st
         el.classList.add('flagged');
         speakText(clean);
 
-        const qObj = activeQuiz[qIdx];
-        let heTrans = (qObj && qObj.glosses && qObj.glosses[clean]) ? qObj.glosses[clean] : null;
+        let existing = state.words.find(w => w.en.toLowerCase() === clean);
+        const pop = document.getElementById('popover');
+        document.getElementById('popEn').textContent = clean;
+        document.getElementById('popHe').textContent = existing ? existing.he : "מתרגם...";
+        pop.style.display = 'flex';
 
+        let heTrans = existing ? existing.he : null;
         if (!heTrans && state.settings.apiKey) {
             try {
-                const res = await callGemini(`Translate the English word "${clean}" to Hebrew in the context of: "${qObj.before} ${qObj.answer} ${qObj.after}". Return JSON: {"he": "תרגום קצר"}`);
+                const qObj = activeQuiz[qIdx];
+                const res = await callGemini(
+                    `Translate the word "${clean}" to concise Hebrew (1-3 words, no quotes) as used in: "${qObj.before} ${qObj.answer} ${qObj.after}"`,
+                    SCHEMAS.singleTrans
+                );
                 heTrans = res.he;
-            } catch (_) { heTrans = "מתרגם..."; }
+            } catch (_) { heTrans = "נוסף לרשימה"; }
         }
 
-        let existing = state.words.find(w => w.en.toLowerCase() === clean);
         if (existing) {
             existing.mastered = false; existing.streak = 0; existing.mistakes = (existing.mistakes || 0) + 1;
-            heTrans = heTrans || existing.he;
         } else if (heTrans) {
             state.words.unshift({ id: Date.now(), en: clean, he: heTrans, streak: 0, mistakes: 1, mastered: false });
         }
         saveState();
         rebuildFlashcards();
 
-        document.getElementById('popEn').textContent = clean;
         document.getElementById('popHe').textContent = heTrans || "נוסף לרשימה";
-        const pop = document.getElementById('popover');
-        pop.style.display = 'flex';
         clearTimeout(popTimer);
-        popTimer = setTimeout(() => { pop.style.display = 'none'; }, 4000);
+        popTimer = setTimeout(() => { pop.style.display = 'none'; }, 4500);
     }
 
     function gradePractice() {
@@ -932,10 +970,9 @@ Return ONLY a JSON array of objects with keys: "id" (number), "answer" (exact st
         try {
             const b64 = await fileToBase64(file);
             const prompt = `Extract all English vocabulary words or phrases from this image (printed or handwritten).
-Fix obvious spelling typos in English if any. If Hebrew translations are written next to them, use them; otherwise translate each English word/phrase accurately to concise Hebrew. Ignore proper names of people.
-Return ONLY a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
+Fix obvious spelling typos in English if any. If Hebrew translations are written next to them, use them; otherwise translate each English word/phrase accurately to concise Hebrew (avoid double quotes inside Hebrew strings). Ignore proper names of people.`;
 
-            pendingScanned = await callGemini(prompt, b64, file.type || "image/jpeg", scanStatus);
+            pendingScanned = await callGemini(prompt, SCHEMAS.wordList, b64, file.type || "image/jpeg", scanStatus);
             document.getElementById('scannedList').innerHTML = pendingScanned.map((w, i) => `
                 <div class="word-row">
                     <span><strong style="direction:ltr; display:inline-block;">${w.en}</strong> — ${w.he}</span>
@@ -969,7 +1006,7 @@ Return ONLY a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
         let he = document.getElementById('manualHe').value.trim();
         if (!en) return;
         if (!he) {
-            try { he = (await callGemini(`Translate "${en}" to concise Hebrew. Return JSON: {"he": "תרגום"}`)).he; } catch (_) { return; }
+            try { he = (await callGemini(`Translate "${en}" to concise Hebrew (no quotes).`, SCHEMAS.singleTrans)).he; } catch (_) { return; }
         }
         if (!state.words.some(w => w.en.toLowerCase() === en.toLowerCase())) {
             state.words.unshift({ id: Date.now(), en, he, streak: 0, mistakes: 0, mastered: false });
@@ -983,7 +1020,7 @@ Return ONLY a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
         const raw = document.getElementById('bulkText').value.trim();
         if (!raw) return;
         try {
-            const parsed = await callGemini(`Parse this vocabulary list into English words/phrases and concise Hebrew translations. Translate if Hebrew is missing. Return JSON array: [{"en": "...", "he": "..."}]. Input:\n${raw}`);
+            const parsed = await callGemini(`Parse this vocabulary list into English words/phrases and concise Hebrew translations (no double quotes inside strings). Translate if Hebrew is missing. Input:\n${raw}`, SCHEMAS.wordList);
             let added = 0;
             parsed.forEach(item => {
                 if (item.en && !state.words.some(w => w.en.toLowerCase() === item.en.toLowerCase())) {
