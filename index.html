@@ -22,7 +22,6 @@
             --success-bg: #dcfce7;
             --danger: #dc2626;
             --danger-bg: #fee2e2;
-            --warning: #eab308;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -48,35 +47,13 @@
             z-index: 50;
         }
 
-        .app-title {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .streak-badge {
-            background: #fef3c7;
-            color: #b45309;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-        }
-
-        .container {
-            max-width: 680px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-
+        .app-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); margin: 0; }
+        .streak-badge { background: #fef3c7; color: #b45309; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; }
+        .container { max-width: 680px; margin: 0 auto; padding: 16px; }
         .screen { display: none; }
         .screen.active { display: block; animation: fadeIn 0.2s ease; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
         .card {
             background: var(--card);
@@ -127,302 +104,85 @@
             user-select: none;
             margin-bottom: 14px;
         }
-        .flashcard-box.flipped {
-            background: var(--primary-light);
-            border-color: #818cf8;
-        }
-        .fc-stars {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            font-size: 0.9rem;
-        }
+        .flashcard-box.flipped { background: var(--primary-light); border-color: #818cf8; }
+        .fc-stars { position: absolute; top: 14px; right: 16px; font-size: 0.9rem; }
         .fc-tts {
-            position: absolute;
-            top: 10px;
-            left: 12px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            position: absolute; top: 10px; left: 12px; background: #fff; border: 1px solid var(--border);
+            border-radius: 50%; width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.06);
         }
-        .fc-main {
-            font-size: 2rem;
-            font-weight: 800;
-            direction: ltr;
-            margin: 12px 0 6px 0;
-        }
+        .fc-main { font-size: 2rem; font-weight: 800; direction: ltr; margin: 12px 0 6px 0; }
         .fc-sub {
-            font-size: 1.45rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 2px dashed #a5b4fc;
-            width: 85%;
-            display: none;
+            font-size: 1.45rem; font-weight: 700; color: var(--primary-dark); margin-top: 12px;
+            padding-top: 12px; border-top: 2px dashed #a5b4fc; width: 85%; display: none;
         }
         .flashcard-box.flipped .fc-sub { display: block; }
         .fc-hint { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
+        .fc-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
 
-        .fc-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 18px;
-        }
-
-        .pill-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .pill-tab {
-            flex: 1;
-            padding: 8px;
-            text-align: center;
-            border-radius: 10px;
-            background: #f1f5f9;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-        .pill-tab.active {
-            background: var(--primary);
-            color: #fff;
-        }
-        .word-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 4px;
-            border-bottom: 1px solid #f1f5f9;
-            gap: 8px;
-        }
+        .pill-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+        .pill-tab { flex: 1; padding: 8px; text-align: center; border-radius: 10px; background: #f1f5f9; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
+        .pill-tab.active { background: var(--primary); color: #fff; }
+        .word-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 4px; border-bottom: 1px solid #f1f5f9; gap: 8px; }
         .word-row:last-child { border-bottom: none; }
         .word-en { direction: ltr; font-weight: 700; font-size: 1rem; display: inline-block; }
         .word-he { color: var(--muted); font-size: 0.92rem; margin-right: 6px; }
 
         .word-bank {
-            direction: ltr;
-            background: #f8fafc;
-            border: 2px dashed #a5b4fc;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 16px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
+            direction: ltr; background: #f8fafc; border: 2px dashed #a5b4fc; border-radius: 12px;
+            padding: 12px; margin-bottom: 16px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
         }
-        .bank-chip {
-            background: #fff;
-            border: 1px solid #cbd5e1;
-            padding: 4px 11px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 0.92rem;
-            cursor: pointer;
-        }
-        .bank-chip.used {
-            background: #e2e8f0;
-            color: #94a3b8;
-            text-decoration: line-through;
-        }
-        .sentence-card {
-            padding: 14px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .en-line {
-            direction: ltr;
-            text-align: left;
-            font-size: 1.08rem;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 5px;
-            line-height: 1.8;
-        }
-        .click-word {
-            cursor: pointer;
-            padding: 1px 3px;
-            border-radius: 4px;
-            border-bottom: 1px dotted #94a3b8;
-        }
-        .click-word:hover, .click-word:active {
-            background: #dbeafe;
-            color: var(--primary-dark);
-        }
-        .click-word.flagged {
-            background: #fef08a;
-            border-bottom: 1px solid #ca8a04;
-        }
-        select.blank-select {
-            direction: ltr;
-            padding: 5px 8px;
-            border-radius: 8px;
-            border: 2px solid #cbd5e1;
-            font-weight: 700;
-            font-size: 0.95rem;
-            background: #fff;
-            max-width: 165px;
-        }
-        select.blank-select.correct {
-            border-color: var(--success);
-            background: var(--success-bg);
-            color: #14532d;
-        }
-        select.blank-select.incorrect {
-            border-color: var(--danger);
-            background: var(--danger-bg);
-            color: #7f1d1d;
-        }
-        .q-feedback {
-            font-size: 0.88rem;
-            margin-top: 6px;
-            padding: 6px 10px;
-            border-radius: 8px;
-            display: none;
-        }
+        .bank-chip { background: #fff; border: 1px solid #cbd5e1; padding: 4px 11px; border-radius: 16px; font-weight: 600; font-size: 0.92rem; cursor: pointer; }
+        .bank-chip.used { background: #e2e8f0; color: #94a3b8; text-decoration: line-through; }
+        .sentence-card { padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
+        .en-line { direction: ltr; text-align: left; font-size: 1.08rem; display: flex; flex-wrap: wrap; align-items: center; gap: 5px; line-height: 1.8; }
+        .click-word { cursor: pointer; padding: 1px 3px; border-radius: 4px; border-bottom: 1px dotted #94a3b8; }
+        .click-word:hover, .click-word:active { background: #dbeafe; color: var(--primary-dark); }
+        .click-word.flagged { background: #fef08a; border-bottom: 1px solid #ca8a04; }
+        select.blank-select { direction: ltr; padding: 5px 8px; border-radius: 8px; border: 2px solid #cbd5e1; font-weight: 700; font-size: 0.95rem; background: #fff; max-width: 165px; }
+        select.blank-select.correct { border-color: var(--success); background: var(--success-bg); color: #14532d; }
+        select.blank-select.incorrect { border-color: var(--danger); background: var(--danger-bg); color: #7f1d1d; }
+        .q-feedback { font-size: 0.88rem; margin-top: 6px; padding: 6px 10px; border-radius: 8px; display: none; }
         .q-feedback.show { display: block; }
         .q-feedback.ok { background: var(--success-bg); color: #14532d; }
         .q-feedback.err { background: var(--danger-bg); color: #7f1d1d; }
 
         input[type="text"], input[type="password"], textarea, select.full-select {
-            width: 100%;
-            padding: 11px 12px;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-family: inherit;
-            margin-bottom: 10px;
-            background: #fff;
+            width: 100%; padding: 11px 12px; border: 1.5px solid #cbd5e1; border-radius: 10px;
+            font-size: 1rem; font-family: inherit; margin-bottom: 10px; background: #fff;
         }
-        .field-label {
-            font-size: 0.9rem;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 5px;
-            color: var(--text);
-        }
-        .upload-zone {
-            border: 2px dashed var(--primary);
-            background: var(--primary-light);
-            border-radius: 14px;
-            padding: 24px 16px;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 14px;
-            display: block;
-        }
+        .field-label { font-size: 0.9rem; font-weight: 700; display: block; margin-bottom: 5px; color: var(--text); }
+        .upload-zone { border: 2px dashed var(--primary); background: var(--primary-light); border-radius: 14px; padding: 24px 16px; text-align: center; cursor: pointer; margin-bottom: 14px; display: block; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .stat-box {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 14px;
-            text-align: center;
-        }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; text-align: center; }
         .stat-num { font-size: 1.7rem; font-weight: 800; color: var(--primary); }
         .stat-label { font-size: 0.85rem; color: var(--muted); }
-        .chart-bars {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-            height: 130px;
-            padding-top: 20px;
-            border-bottom: 2px solid var(--border);
-        }
-        .bar-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100%;
-            justify-content: flex-end;
-        }
-        .bar-fill {
-            width: 100%;
-            max-width: 28px;
-            background: var(--primary);
-            border-radius: 6px 6px 0 0;
-            min-height: 4px;
-        }
+        .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 130px; padding-top: 20px; border-bottom: 2px solid var(--border); }
+        .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+        .bar-fill { width: 100%; max-width: 28px; background: var(--primary); border-radius: 6px 6px 0 0; min-height: 4px; }
         .bar-val { font-size: 0.72rem; font-weight: 700; margin-bottom: 3px; }
 
         #popover {
-            position: fixed;
-            bottom: 85px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 92%;
-            max-width: 440px;
-            background: #0f172a;
-            color: #fff;
-            padding: 12px 16px;
-            border-radius: 14px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            z-index: 200;
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
+            position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 440px;
+            background: #0f172a; color: #fff; padding: 12px 16px; border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 200; display: none; justify-content: space-between; align-items: center; gap: 10px;
         }
 
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--card);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
-            z-index: 100;
+            position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border);
+            display: flex; justify-content: space-around; padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); z-index: 100;
         }
-        .nav-item {
-            background: none;
-            border: none;
-            color: var(--muted);
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            cursor: pointer;
-            flex: 1;
-            font-family: inherit;
-        }
+        .nav-item { background: none; border: none; color: var(--muted); font-size: 0.75rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1; font-family: inherit; }
         .nav-item .icon { font-size: 1.3rem; }
         .nav-item.active { color: var(--primary); font-weight: 800; }
-
-        .loader {
-            text-align: center;
-            padding: 25px 10px;
-            color: var(--primary);
-            font-weight: 700;
-        }
+        .loader { text-align: center; padding: 25px 10px; color: var(--primary); font-weight: 700; }
     </style>
 </head>
 <body>
 
 <header class="app-header">
-    <h1 class="app-title">🇬🇧 English Master</h1>
+    <h1 class="app-title">🇬🇧 English Master <small style="font-size:0.7rem; color:#64748b;">v5</small></h1>
     <div class="streak-badge" id="headerStats">טוען...</div>
 </header>
 
@@ -558,16 +318,16 @@
     <section id="screen-settings" class="screen">
         <div class="card">
             <h2>🔑 הגדרות Gemini API ומודל אוטומטי</h2>
-            <p class="sub">האפליקציה שולפת אוטומטית את המודלים הפעילים בחשבון שלך ועוברת אוטומטית למודל חלופי אם יש עומס בגוגל.</p>
+            <p class="sub">הזן את מפתח ה-API ולחץ על "שמור ובצע בדיקת יצירה חיה" כדי למצוא מודל שפועל מקצה לקצה.</p>
             
             <label class="field-label" for="apiKeyInput">מפתח API (API Key):</label>
-            <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="direction:ltr;">
+            <input type="password" id="apiKeyInput" placeholder="AIzaSy... / AQ..." style="direction:ltr;">
 
-            <label class="field-label" for="modelSelect">מודל מועדף (נטען מהחשבון שלך):</label>
+            <label class="field-label" for="modelSelect">מודל מועדף:</label>
             <select id="modelSelect" class="full-select" style="direction:ltr;" onchange="onModelSelectChange()"></select>
 
-            <button class="btn btn-primary" onclick="saveAndDiscoverModels()">🔍 שמור ובדוק מודלים זמינים</button>
-            <div id="apiSavedMsg" style="font-size:0.9rem; font-weight:700; margin-top:10px; display:none;"></div>
+            <button class="btn btn-primary" onclick="saveAndTestLiveGeneration()">⚡ שמור ובצע בדיקת יצירה חיה</button>
+            <div id="apiSavedMsg" style="font-size:0.9rem; font-weight:700; margin-top:10px; display:none; white-space:pre-wrap;"></div>
         </div>
 
         <div class="card">
@@ -583,7 +343,6 @@
 
         <div class="card">
             <h2>💾 גיבוי ושחזור נתונים</h2>
-            <p class="sub">אפשר לייצא את כל המילים וההיסטוריה לקובץ גיבוי או לשחזר במכשיר אחר.</p>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-outline" style="flex:1;" onclick="exportData()">⬇️ ייצוא גיבוי</button>
                 <label class="btn btn-secondary" style="flex:1; margin:0;">
@@ -596,7 +355,6 @@
 
 </div>
 
-<!-- בועית תרגום צפה בלחיצה על מילה במשפט -->
 <div id="popover">
     <div>
         <div style="display:flex; align-items:center; gap:8px;">
@@ -609,7 +367,6 @@
     <button onclick="document.getElementById('popover').style.display='none'" style="background:rgba(255,255,255,0.15); border:none; color:#fff; border-radius:8px; padding:6px 10px; cursor:pointer;">✕</button>
 </div>
 
-<!-- תפריט ניווט תחתון -->
 <nav class="bottom-nav">
     <button class="nav-item active" onclick="switchScreen('cards', this)">
         <span class="icon">🗂️</span><span>כרטיסיות</span>
@@ -632,73 +389,29 @@
     const DEFAULT_MODEL = "gemini-3.8-flash";
 
     const INITIAL_WORDS = [
-        { en: "celebrate", he: "לחגוג" },
-        { en: "such", he: "כזה" },
-        { en: "rather strange", he: "די מוזר" },
-        { en: "themselves", he: "עצמם" },
-        { en: "encourage", he: "לעודד" },
-        { en: "dishes", he: "מנות / צלחות" },
-        { en: "occasion", he: "אירוע" },
-        { en: "products", he: "מוצרים" },
-        { en: "although", he: "למרות" },
-        { en: "result", he: "תוצאות" },
-        { en: "lifestyle", he: "אורח חיים" },
-        { en: "environment", he: "סביבה" },
-        { en: "demand", he: "לדרוש" },
-        { en: "invented", he: "להמציא (המציא)" },
-        { en: "vegan society", he: "הקהילה הטבעונית" },
-        { en: "members", he: "חברים בארגון" },
-        { en: "chose", he: "בחר" },
-        { en: "reasons", he: "סיבות" },
-        { en: "healthier", he: "בריא יותר" },
-        { en: "bodies", he: "גופים" },
-        { en: "nowadays", he: "בימינו" },
-        { en: "greatly", he: "מאוד" },
-        { en: "wide", he: "רחב" },
-        { en: "including", he: "כולל" },
-        { en: "restaurant", he: "מסעדה" },
-        { en: "interesting", he: "מעניין" },
-        { en: "prepare", he: "להכין" },
-        { en: "another", he: "אחר" },
-        { en: "attend", he: "לנכוח / להשתתף" },
-        { en: "organized", he: "מאורגן" },
-        { en: "public", he: "ציבורי" },
-        { en: "put up stands", he: "להציב דוכנים / לשים עמדות ברחוב" },
-        { en: "hand out free", he: "לחלק בחינם" },
-        { en: "well", he: "טוב" },
-        { en: "demonstrate", he: "להדגים" },
-        { en: "plant", he: "צמח" },
-        { en: "outdoor", he: "בחוץ" },
-        { en: "switching", he: "מחליף / להחליף" },
-        { en: "recycling plastic", he: "מחזור פלסטיק" },
-        { en: "customers", he: "לקוחות" },
-        { en: "quality", he: "איכות" },
-        { en: "local", he: "מקומי" },
-        { en: "almost", he: "כמעט" },
-        { en: "grown", he: "לגדול / צמח" },
-        { en: "recent", he: "לאחרונה" },
-        { en: "instead", he: "במקום" },
-        { en: "minds", he: "מוח / נפש" },
-        { en: "selection", he: "מבחר" },
-        { en: "tour", he: "סיור" },
-        { en: "protect", he: "להגן" },
-        { en: "volunteers", he: "מתנדבים" },
-        { en: "square", he: "ריבוע / כיכר העיר" },
-        { en: "during", he: "תוך כדי / במהלך" },
-        { en: "samples", he: "דוגמיות" },
-        { en: "without", he: "בלי" },
-        { en: "dedicated", he: "חרוצים / מסורים" },
-        { en: "thousands", he: "אלפים" },
-        { en: "decided", he: "החליט" },
-        { en: "plant-based", he: "מבוסס צמחים" },
-        { en: "order", he: "סדר / להזמין" },
-        { en: "exercise", he: "אימון / תרגיל" },
-        { en: "essential", he: "חיוני" },
-        { en: "menu", he: "תפריט" },
-        { en: "price", he: "מחיר" },
-        { en: "seemed", he: "נראה (נראה ש...)" },
-        { en: "chefs", he: "שפים" },
-        { en: "prove", he: "להוכיח" }
+        { en: "celebrate", he: "לחגוג" }, { en: "such", he: "כזה" }, { en: "rather strange", he: "די מוזר" },
+        { en: "themselves", he: "עצמם" }, { en: "encourage", he: "לעודד" }, { en: "dishes", he: "מנות / צלחות" },
+        { en: "occasion", he: "אירוע" }, { en: "products", he: "מוצרים" }, { en: "although", he: "למרות" },
+        { en: "result", he: "תוצאות" }, { en: "lifestyle", he: "אורח חיים" }, { en: "environment", he: "סביבה" },
+        { en: "demand", he: "לדרוש" }, { en: "invented", he: "להמציא (המציא)" }, { en: "vegan society", he: "הקהילה הטבעונית" },
+        { en: "members", he: "חברים בארגון" }, { en: "chose", he: "בחר" }, { en: "reasons", he: "סיבות" },
+        { en: "healthier", he: "בריא יותר" }, { en: "bodies", he: "גופים" }, { en: "nowadays", he: "בימינו" },
+        { en: "greatly", he: "מאוד" }, { en: "wide", he: "רחב" }, { en: "including", he: "כולל" },
+        { en: "restaurant", he: "מסעדה" }, { en: "interesting", he: "מעניין" }, { en: "prepare", he: "להכין" },
+        { en: "another", he: "אחר" }, { en: "attend", he: "לנכוח / להשתתף" }, { en: "organized", he: "מאורגן" },
+        { en: "public", he: "ציבורי" }, { en: "put up stands", he: "להציב דוכנים / לשים עמדות ברחוב" },
+        { en: "hand out free", he: "לחלק בחינם" }, { en: "well", he: "טוב" }, { en: "demonstrate", he: "להדגים" },
+        { en: "plant", he: "צמח" }, { en: "outdoor", he: "בחוץ" }, { en: "switching", he: "מחליף / להחליף" },
+        { en: "recycling plastic", he: "מחזור פלסטיק" }, { en: "customers", he: "לקוחות" }, { en: "quality", he: "איכות" },
+        { en: "local", he: "מקומי" }, { en: "almost", he: "כמעט" }, { en: "grown", he: "לגדול / צמח" },
+        { en: "recent", he: "לאחרונה" }, { en: "instead", he: "במקום" }, { en: "minds", he: "מוח / נפש" },
+        { en: "selection", he: "מבחר" }, { en: "tour", he: "סיור" }, { en: "protect", he: "להגן" },
+        { en: "volunteers", he: "מתנדבים" }, { en: "square", he: "ריבוע / כיכר העיר" }, { en: "during", he: "תוך כדי / במהלך" },
+        { en: "samples", he: "דוגמיות" }, { en: "without", he: "בלי" }, { en: "dedicated", he: "חרוצים / מסורים" },
+        { en: "thousands", he: "אלפים" }, { en: "decided", he: "החליט" }, { en: "plant-based", he: "מבוסס צמחים" },
+        { en: "order", he: "סדר / להזמין" }, { en: "exercise", he: "אימון / תרגיל" }, { en: "essential", he: "חיוני" },
+        { en: "menu", he: "תפריט" }, { en: "price", he: "מחיר" }, { en: "seemed", he: "נראה (נראה ש...)" },
+        { en: "chefs", he: "שפים" }, { en: "prove", he: "להוכיח" }
     ];
 
     const STORAGE_KEY = "english_master_app_v1";
@@ -708,13 +421,7 @@
         settings: { apiKey: "", modelName: DEFAULT_MODEL, availableModels: [], threshold: 3 }
     };
 
-    let fcDeck = [];
-    let fcIndex = 0;
-    let fcEnToHe = true;
-    let currentListTab = 'active';
-    let activeQuiz = [];
-    let pendingScanned = [];
-    let popTimer = null;
+    let fcDeck = [], fcIndex = 0, fcEnToHe = true, currentListTab = 'active', activeQuiz = [], pendingScanned = [], popTimer = null;
 
     function loadState() {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -722,18 +429,9 @@
             state = JSON.parse(raw);
             if (!state.settings) state.settings = {};
             if (!Array.isArray(state.settings.availableModels)) state.settings.availableModels = [];
-            if (!state.settings.modelName || state.settings.modelName === "gemini-2.5-flash") {
-                state.settings.modelName = DEFAULT_MODEL;
-            }
+            if (!state.settings.modelName) state.settings.modelName = DEFAULT_MODEL;
         } else {
-            state.words = INITIAL_WORDS.map((w, i) => ({
-                id: Date.now() + i,
-                en: w.en,
-                he: w.he,
-                streak: 0,
-                mistakes: 0,
-                mastered: false
-            }));
+            state.words = INITIAL_WORDS.map((w, i) => ({ id: Date.now() + i, en: w.en, he: w.he, streak: 0, mistakes: 0, mastered: false }));
             state.settings = { apiKey: "", modelName: DEFAULT_MODEL, availableModels: [], threshold: 3 };
             saveState();
         }
@@ -742,11 +440,6 @@
         renderModelDropdown();
         rebuildFlashcards();
         updateHeader();
-
-        // אם יש כבר מפתח שמור אבל טרם נטענה רשימת מודלים, נמשוך אותה בשקט ברקע
-        if (state.settings.apiKey && state.settings.availableModels.length === 0) {
-            discoverModelsFromGoogle(state.settings.apiKey).catch(() => {});
-        }
     }
 
     function saveState() {
@@ -774,39 +467,89 @@
         saveState();
     }
 
-    // משיכת המודלים הזמינים בפועל עבור מפתח ה-API ישירות מ-ListModels של גוגל
     async function discoverModelsFromGoogle(key) {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models`, {
+            method: 'GET',
+            headers: { 'x-goog-api-key': key }
+        });
         if (!res.ok) {
-            const err = await res.text();
-            throw new Error("מפתח API שגוי או שגיאת רשת:\n" + err);
+            // ניסיון גיבוי עם פרמטר ב-URL
+            const res2 = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
+            if (!res2.ok) throw new Error("שגיאת גישה לרשימת מודלים (" + res2.status + ")");
+            return parseModelsList(await res2.json());
         }
-        const data = await res.json();
+        return parseModelsList(await res.json());
+    }
+
+    function parseModelsList(data) {
         const valid = (data.models || [])
             .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
             .map(m => m.name.replace(/^models\//, ''))
-            .filter(id => id.startsWith("gemini-") && !/embedding|imagen|veo|tts|audio|live|aqa|robotics|computer-use|learnlm/i.test(id));
+            .filter(id => /^gemini-[0-9]/.test(id) && !/embedding|imagen|veo|tts|audio|live|aqa|robotics|computer-use|learnlm|thinking|image/i.test(id));
 
-        // תעדוף מודלי flash מהירים בראש הרשימה
         valid.sort((a, b) => {
-            const aFlash = a.includes("flash") ? 0 : 1;
-            const bFlash = b.includes("flash") ? 0 : 1;
-            if (aFlash !== bFlash) return aFlash - bFlash;
-            return b.localeCompare(a);
+            const score = (s) => (s.includes("flash") && !s.includes("preview") ? 0 : s.includes("flash") ? 1 : 2);
+            return score(a) - score(b) || b.localeCompare(a);
         });
 
         if (valid.length > 0) {
             state.settings.availableModels = valid;
-            if (!valid.includes(state.settings.modelName)) {
-                state.settings.modelName = valid[0];
-            }
+            if (!valid.includes(state.settings.modelName)) state.settings.modelName = valid[0];
             saveState();
             renderModelDropdown();
         }
         return valid;
     }
 
-    async function saveAndDiscoverModels() {
+    // שליחת בקשת POST בודדת למודל (מנסה Header ואם נחסם ב-405/CORS מנסה Query Param וכן v1/Interactions)
+    async function trySingleModelRequest(key, model, parts) {
+        const cleanModel = encodeURIComponent(model.replace(/^models\//, '').trim());
+        const payload = JSON.stringify({
+            contents: [{ parts }],
+            generationConfig: { responseMimeType: "application/json", temperature: 0.7 }
+        });
+
+        // שיטה 1: Header תקני של גוגל (מונע חסימות URL של פיירוול/ראוטר)
+        let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+            body: payload
+        });
+
+        // שיטה 2: אם הוחזר 405, ננסה ב-v1 רגיל או עם פרמטר key ב-URL
+        if (res.status === 405) {
+            res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${encodeURIComponent(key)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: payload
+            });
+        }
+
+        // שיטה 3: תמיכה ב-Interactions API החדש למקרה שהמפתח החדש (AQ.) מחייב אותו
+        if (res.status === 405 || res.status === 401 || res.status === 403) {
+            const interRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/interactions?key=${encodeURIComponent(key)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: cleanModel,
+                    input: parts[0].text
+                })
+            });
+            if (interRes.ok) {
+                const interData = await interRes.json();
+                const outText = interData.outputs?.[0]?.text || interData.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (outText) return { ok: true, text: outText };
+            }
+        }
+
+        if (res.ok) {
+            const data = await res.json();
+            return { ok: true, text: data.candidates[0].content.parts[0].text };
+        }
+        return { ok: false, status: res.status, errorText: await res.text() };
+    }
+
+    async function saveAndTestLiveGeneration() {
         const key = document.getElementById('apiKeyInput').value.trim();
         state.settings.apiKey = key;
         saveState();
@@ -814,16 +557,77 @@
         const msg = document.getElementById('apiSavedMsg');
         msg.style.display = 'block';
         msg.style.color = 'var(--primary)';
-        msg.textContent = "⏳ בודק חיבור ושולף מודלים זמינים מגוגל...";
+        msg.textContent = "⏳ שלב 1/2: שולף מודלים מהחשבון שלך...";
 
         try {
             const models = await discoverModelsFromGoogle(key);
-            msg.style.color = 'var(--success)';
-            msg.textContent = `✅ החיבור תקין! נמצאו ${models.length} מודלים פעילים. נבחר: ${state.settings.modelName}`;
+            msg.textContent = `⏳ שלב 2/2: נמצאו ${models.length} מודלים. מבצע בדיקת שליחה חיה (POST)...`;
+            const testOut = await callGemini('Return this exact JSON: {"status": "ok"}');
+            if (testOut && testOut.status === "ok") {
+                msg.style.color = 'var(--success)';
+                msg.textContent = `✅ עובד מקצה לקצה! המודל הפעיל שנבחר: ${state.settings.modelName}\nאפשר לעבור ללשונית "תרגול"!`;
+            }
         } catch (err) {
             msg.style.color = 'var(--danger)';
-            msg.textContent = "❌ " + err.message;
+            msg.textContent = "❌ הבדיקה נכשלה:\n" + err.message;
         }
+    }
+
+    function extractJson(rawText) {
+        const cleaned = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+        const firstBracket = cleaned.search(/[\[{]/);
+        const sliced = firstBracket > 0 ? cleaned.slice(firstBracket) : cleaned;
+        return JSON.parse(sliced);
+    }
+
+    async function callGemini(promptText, base64Image = null, mimeType = null, loaderEl = null) {
+        const key = (state.settings.apiKey || "").trim();
+        if (!key) {
+            alert("יש להזין מפתח Gemini API במסך 'הגדרות' לפני שימוש בפעולה זו.");
+            switchScreen('settings', document.querySelectorAll('.nav-item')[4]);
+            throw new Error("Missing API Key");
+        }
+
+        if (!state.settings.availableModels || state.settings.availableModels.length === 0) {
+            try { await discoverModelsFromGoogle(key); } catch (_) {}
+        }
+
+        const preferred = ((state.settings.modelName || DEFAULT_MODEL).trim()).replace(/^models\//, '');
+        const others = (state.settings.availableModels || []).filter(m => m !== preferred);
+        const queue = [preferred, ...others.slice(0, 6)];
+
+        const parts = [{ text: promptText }];
+        if (base64Image) parts.push({ inline_data: { mime_type: mimeType, data: base64Image } });
+
+        let debugLog = [];
+        for (let i = 0; i < queue.length; i++) {
+            const model = queue[i];
+            if (i > 0 && loaderEl) {
+                loaderEl.textContent = `⏳ מנסה מודל חלופי (${model})...`;
+            }
+
+            const attempt = await trySingleModelRequest(key, model, parts);
+            if (attempt.ok) {
+                if (state.settings.modelName !== model) {
+                    state.settings.modelName = model;
+                    saveState();
+                    renderModelDropdown();
+                }
+                return extractJson(attempt.text);
+            }
+
+            debugLog.push(`${model} -> HTTP ${attempt.status}`);
+
+            // דילוג אוטומטי על 405, 503, 429, 404, 400
+            if ([405, 503, 429, 404, 400].includes(attempt.status)) {
+                await new Promise(r => setTimeout(r, 800));
+                continue;
+            } else {
+                throw new Error(`שגיאה ממודל ${model} (${attempt.status}):\n${attempt.errorText.slice(0, 220)}`);
+            }
+        }
+
+        throw new Error("כל המודלים שנבדקו החזירו שגיאה:\n" + debugLog.join(", "));
     }
 
     function updateHeader() {
@@ -839,7 +643,6 @@
         document.getElementById(`screen-${name}`).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
         if (btnEl) btnEl.classList.add('active');
-
         if (name === 'cards') { renderFlashcard(); renderWordList(); }
         if (name === 'stats') { renderStats(); }
     }
@@ -853,7 +656,6 @@
         window.speechSynthesis.speak(utter);
     }
 
-    // --- מסך 1: כרטיסיות ורשימת מילים ---
     function rebuildFlashcards() {
         fcDeck = state.words.filter(w => !w.mastered);
         fcIndex = 0;
@@ -876,22 +678,17 @@
 
         const w = fcDeck[fcIndex];
         const th = state.settings.threshold || 3;
-        const stars = "⭐".repeat(w.streak) + "☆".repeat(Math.max(0, th - w.streak));
-        document.getElementById('fcStars').textContent = stars;
+        document.getElementById('fcStars').textContent = "⭐".repeat(w.streak) + "☆".repeat(Math.max(0, th - w.streak));
         document.getElementById('fcCounter').textContent = `כרטיסייה ${fcIndex + 1} מתוך ${fcDeck.length}`;
 
         const frontEl = document.getElementById('fcFront');
         const backEl = document.getElementById('fcBack');
         if (fcEnToHe) {
-            frontEl.textContent = w.en;
-            frontEl.style.direction = 'ltr';
-            backEl.textContent = w.he;
-            backEl.style.direction = 'rtl';
+            frontEl.textContent = w.en; frontEl.style.direction = 'ltr';
+            backEl.textContent = w.he; backEl.style.direction = 'rtl';
         } else {
-            frontEl.textContent = w.he;
-            frontEl.style.direction = 'rtl';
-            backEl.textContent = w.en;
-            backEl.style.direction = 'ltr';
+            frontEl.textContent = w.he; frontEl.style.direction = 'rtl';
+            backEl.textContent = w.en; backEl.style.direction = 'ltr';
         }
     }
 
@@ -899,13 +696,7 @@
     function nextCard() { fcIndex++; renderFlashcard(); }
     function prevCard() { fcIndex--; renderFlashcard(); }
     function speakCurrentCard() { if (fcDeck[fcIndex]) speakText(fcDeck[fcIndex].en); }
-
-    function shuffleFlashcards() {
-        fcDeck.sort(() => Math.random() - 0.5);
-        fcIndex = 0;
-        renderFlashcard();
-    }
-
+    function shuffleFlashcards() { fcDeck.sort(() => Math.random() - 0.5); fcIndex = 0; renderFlashcard(); }
     function toggleCardDirection() {
         fcEnToHe = !fcEnToHe;
         document.getElementById('dirBtn').textContent = fcEnToHe ? "כיוון: אנגלית ⬅️ עברית" : "כיוון: עברית ⬅️ אנגלית";
@@ -922,18 +713,12 @@
     function renderWordList() {
         const q = (document.getElementById('searchWord').value || "").trim().toLowerCase();
         const th = state.settings.threshold || 3;
-        const filtered = state.words.filter(w => {
-            const matchTab = currentListTab === 'active' ? !w.mastered : w.mastered;
-            const matchSearch = !q || w.en.toLowerCase().includes(q) || w.he.includes(q);
-            return matchTab && matchSearch;
-        });
-
+        const filtered = state.words.filter(w => (currentListTab === 'active' ? !w.mastered : w.mastered) && (!q || w.en.toLowerCase().includes(q) || w.he.includes(q)));
         const container = document.getElementById('wordListContainer');
         if (filtered.length === 0) {
             container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted);">לא נמצאו מילים ברשימה זו.</div>`;
             return;
         }
-
         container.innerHTML = filtered.map(w => {
             const stars = w.mastered ? "🏆" : ("⭐".repeat(w.streak) + "☆".repeat(Math.max(0, th - w.streak)));
             const toggleBtn = w.mastered
@@ -964,87 +749,6 @@
         rebuildFlashcards();
     }
 
-    // --- קריאה חכמה ל-Gemini API עם גילוי מודלים אוטומטי ומעקף עומסים (503/404) ---
-    function extractJson(rawText) {
-        const cleaned = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
-        return JSON.parse(cleaned);
-    }
-
-    async function callGemini(promptText, base64Image = null, mimeType = null, loaderEl = null) {
-        const key = (state.settings.apiKey || "").trim();
-        if (!key) {
-            alert("יש להזין מפתח Gemini API במסך 'הגדרות' לפני שימוש בפעולה זו.");
-            switchScreen('settings', document.querySelectorAll('.nav-item')[4]);
-            throw new Error("Missing API Key");
-        }
-
-        // אם עדיין אין רשימת מודלים מאומתת מהחשבון, נשלוף אותה כעת
-        if (!state.settings.availableModels || state.settings.availableModels.length === 0) {
-            try { await discoverModelsFromGoogle(key); } catch (_) {}
-        }
-
-        const preferred = ((state.settings.modelName || DEFAULT_MODEL).trim()).replace(/^models\//, '');
-        const others = (state.settings.availableModels || []).filter(m => m !== preferred);
-        // ננסה את המודל הנבחר, ואם עמוס (503) או לא קיים (404) נעבור אוטומטית לשאר המודלים הפעילים בחשבון
-        const queue = [preferred, ...others.slice(0, 4), preferred];
-
-        const parts = [{ text: promptText }];
-        if (base64Image) {
-            parts.push({ inline_data: { mime_type: mimeType, data: base64Image } });
-        }
-
-        let lastError = "";
-        for (let i = 0; i < queue.length; i++) {
-            const model = queue[i];
-            if (i > 0 && loaderEl) {
-                loaderEl.textContent = `⏳ השרת עמוס, מנסה אוטומטית מודל חלופי (${model})...`;
-            }
-
-            const res = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/$](https://generativelanguage.googleapis.com/v1beta/models/$){model}:generateContent?key=${key}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts }],
-                    generationConfig: { responseMimeType: "application/json", temperature: 0.7 }
-                })
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                const textOut = data.candidates[0].content.parts[0].text;
-                // אם הצליח במודל חלופי כי הקודם החזיר 404, נשמור את המודל התקין להמשך
-                if (state.settings.modelName !== model && i > 0) {
-                    state.settings.modelName = model;
-                    saveState();
-                    renderModelDropdown();
-                }
-                return extractJson(textOut);
-            }
-
-            lastError = await res.text();
-
-            // אם קיבלנו 404 ועדיין לא שלפנו מודלים חדשים, נשלוף עכשיו ונוסיף לתור
-            if (res.status === 404 && others.length === 0) {
-                try {
-                    const fresh = await discoverModelsFromGoogle(key);
-                    fresh.slice(0, 4).forEach(m => { if (!queue.includes(m)) queue.push(m); });
-                } catch (_) {}
-                continue;
-            }
-
-            // במקרה של עומס (503 / 429) או מודל לא נתמך (404 / 400), נמתין רגע ונעבור למודל הבא בתור
-            if (res.status === 503 || res.status === 429 || res.status === 404 || res.status === 400) {
-                await new Promise(r => setTimeout(r, 1200));
-                continue;
-            } else {
-                break;
-            }
-        }
-
-        throw new Error("כל המודלים הזמינים עמוסים כרגע, נסי שוב בעוד מספר שניות.\n" + lastError);
-    }
-
-    // --- מסך 2: תרגול משפטים דינמי (עד 12 מילים) ---
     async function startNewPractice(fromArchive) {
         let pool = state.words.filter(w => fromArchive ? w.mastered : !w.mastered);
         if (pool.length === 0) {
@@ -1069,10 +773,9 @@ Rules:
 1. Keep surrounding words relatively simple (A2-B1 level) so the student can understand the context.
 2. Split each sentence into "before" (text before the target word/phrase) and "after" (text after the target word/phrase). Do NOT include the target word in "before" or "after".
 3. Also provide "glosses": a dictionary object mapping EVERY single lowercase word used in "before" and "after" (stripped of punctuation) to its concise Hebrew translation in this exact context.
-Return a JSON array of objects with keys: "id" (number), "answer" (exact string from input 'en'), "before" (string), "after" (string), "glosses" (object).`;
+Return ONLY a JSON array of objects with keys: "id" (number), "answer" (exact string from input 'en'), "before" (string), "after" (string), "glosses" (object).`;
 
-            const generated = await callGemini(prompt, null, null, loaderEl);
-            activeQuiz = generated;
+            activeQuiz = await callGemini(prompt, null, null, loaderEl);
             renderPracticeQuiz();
         } catch (err) {
             if (err.message !== "Missing API Key") alert(err.message);
@@ -1096,8 +799,7 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
             `<span class="bank-chip" data-word="${bw.toLowerCase()}" onclick="speakText('${bw.replace(/'/g, "\\'")}')">${bw}</span>`
         ).join('');
 
-        const listEl = document.getElementById('sentencesList');
-        listEl.innerHTML = activeQuiz.map((q, idx) => {
+        document.getElementById('sentencesList').innerHTML = activeQuiz.map((q, idx) => {
             const opts = bankWords.map(bw => `<option value="${bw}">${bw}</option>`).join('');
             return `
                 <div class="sentence-card">
@@ -1149,19 +851,10 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
 
         let existing = state.words.find(w => w.en.toLowerCase() === clean);
         if (existing) {
-            existing.mastered = false;
-            existing.streak = 0;
-            existing.mistakes = (existing.mistakes || 0) + 1;
+            existing.mastered = false; existing.streak = 0; existing.mistakes = (existing.mistakes || 0) + 1;
             heTrans = heTrans || existing.he;
         } else if (heTrans) {
-            state.words.unshift({
-                id: Date.now(),
-                en: clean,
-                he: heTrans,
-                streak: 0,
-                mistakes: 1,
-                mastered: false
-            });
+            state.words.unshift({ id: Date.now(), en: clean, he: heTrans, streak: 0, mistakes: 1, mastered: false });
         }
         saveState();
         rebuildFlashcards();
@@ -1175,9 +868,8 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
     }
 
     function gradePractice() {
-        let correct = 0;
+        let correct = 0, newlyMastered = 0;
         const th = state.settings.threshold || 3;
-        let newlyMastered = 0;
 
         activeQuiz.forEach((q, idx) => {
             const sel = document.getElementById(`quiz-sel-${idx}`);
@@ -1194,8 +886,7 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
                 if (wordObj) {
                     wordObj.streak = (wordObj.streak || 0) + 1;
                     if (wordObj.streak >= th && !wordObj.mastered) {
-                        wordObj.mastered = true;
-                        newlyMastered++;
+                        wordObj.mastered = true; newlyMastered++;
                         fb.innerHTML = `✅ <strong>נכון!</strong> הגעת ל-${th} הצלחות רצופות — המילה עברה לארכיון "יודעת"! 🏆`;
                     } else {
                         fb.innerHTML = `✅ <strong>נכון!</strong> (רצף שליטה: ${wordObj.streak}/${th})`;
@@ -1205,22 +896,12 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
                 sel.classList.add('incorrect');
                 fb.classList.add('err', 'show');
                 fb.innerHTML = `❌ <strong>לא מדויק.</strong> התשובה הנכונה: <strong>${q.answer}</strong>`;
-                if (wordObj) {
-                    wordObj.streak = 0;
-                    wordObj.mastered = false;
-                    wordObj.mistakes = (wordObj.mistakes || 0) + 1;
-                }
+                if (wordObj) { wordObj.streak = 0; wordObj.mastered = false; wordObj.mistakes = (wordObj.mistakes || 0) + 1; }
             }
         });
 
         const pct = Math.round((correct / activeQuiz.length) * 100);
-        state.quizHistory.push({
-            date: new Date().toLocaleDateString('he-IL'),
-            score: correct,
-            total: activeQuiz.length,
-            pct
-        });
-
+        state.quizHistory.push({ date: new Date().toLocaleDateString('he-IL'), score: correct, total: activeQuiz.length, pct });
         saveState();
         rebuildFlashcards();
 
@@ -1231,7 +912,6 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // --- מסך 3: סריקת תמונה והוספת מילים ---
     function fileToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -1253,11 +933,10 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
             const b64 = await fileToBase64(file);
             const prompt = `Extract all English vocabulary words or phrases from this image (printed or handwritten).
 Fix obvious spelling typos in English if any. If Hebrew translations are written next to them, use them; otherwise translate each English word/phrase accurately to concise Hebrew. Ignore proper names of people.
-Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
+Return ONLY a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
 
             pendingScanned = await callGemini(prompt, b64, file.type || "image/jpeg", scanStatus);
-            const listEl = document.getElementById('scannedList');
-            listEl.innerHTML = pendingScanned.map((w, i) => `
+            document.getElementById('scannedList').innerHTML = pendingScanned.map((w, i) => `
                 <div class="word-row">
                     <span><strong style="direction:ltr; display:inline-block;">${w.en}</strong> — ${w.he}</span>
                     <button class="btn btn-secondary btn-sm" onclick="pendingScanned.splice(${i},1); this.parentElement.remove();">✕</button>
@@ -1275,15 +954,12 @@ Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
     function confirmScannedWords() {
         let added = 0;
         pendingScanned.forEach(item => {
-            if (!item.en) return;
-            const exists = state.words.some(w => w.en.toLowerCase() === item.en.trim().toLowerCase());
-            if (!exists) {
+            if (item.en && !state.words.some(w => w.en.toLowerCase() === item.en.trim().toLowerCase())) {
                 state.words.unshift({ id: Date.now() + Math.random(), en: item.en.trim(), he: item.he.trim(), streak: 0, mistakes: 0, mastered: false });
                 added++;
             }
         });
-        saveState();
-        rebuildFlashcards();
+        saveState(); rebuildFlashcards();
         document.getElementById('scanPreview').style.display = 'none';
         alert(`נוספו ${added} מילים חדשות למאגר התרגול!`);
     }
@@ -1292,24 +968,15 @@ Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
         const en = document.getElementById('manualEn').value.trim();
         let he = document.getElementById('manualHe').value.trim();
         if (!en) return;
-
         if (!he) {
-            try {
-                const res = await callGemini(`Translate "${en}" to concise Hebrew. Return JSON: {"he": "תרגום"}`);
-                he = res.he;
-            } catch (_) { return; }
+            try { he = (await callGemini(`Translate "${en}" to concise Hebrew. Return JSON: {"he": "תרגום"}`)).he; } catch (_) { return; }
         }
-
         if (!state.words.some(w => w.en.toLowerCase() === en.toLowerCase())) {
             state.words.unshift({ id: Date.now(), en, he, streak: 0, mistakes: 0, mastered: false });
-            saveState();
-            rebuildFlashcards();
+            saveState(); rebuildFlashcards();
             alert(`המילה "${en}" (${he}) נוספה!`);
-        } else {
-            alert("המילה כבר קיימת במאגר.");
-        }
-        document.getElementById('manualEn').value = "";
-        document.getElementById('manualHe').value = "";
+        } else alert("המילה כבר קיימת במאגר.");
+        document.getElementById('manualEn').value = ""; document.getElementById('manualHe').value = "";
     }
 
     async function processBulkWords() {
@@ -1324,16 +991,12 @@ Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
                     added++;
                 }
             });
-            saveState();
-            rebuildFlashcards();
+            saveState(); rebuildFlashcards();
             document.getElementById('bulkText').value = "";
             alert(`נוספו ${added} מילים חדשות מהרשימה!`);
-        } catch (err) {
-            if (err.message !== "Missing API Key") alert(err.message);
-        }
+        } catch (err) { if (err.message !== "Missing API Key") alert(err.message); }
     }
 
-    // --- מסך 4: סטטיסטיקה וגרף ---
     function renderStats() {
         const mastered = state.words.filter(w => w.mastered).length;
         const active = state.words.filter(w => !w.mastered).length;
@@ -1347,42 +1010,25 @@ Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
 
         const recent = state.quizHistory.slice(-10);
         const chartEl = document.getElementById('chartContainer');
-        if (recent.length === 0) {
-            chartEl.innerHTML = `<div style="width:100%; text-align:center; color:var(--muted); align-self:center;">עדיין לא בוצעו תרגולים להצגת גרף.</div>`;
-        } else {
-            chartEl.innerHTML = recent.map(q => `
-                <div class="bar-col">
-                    <span class="bar-val">${q.pct}%</span>
-                    <div class="bar-fill" style="height:${Math.max(6, q.pct)}%;"></div>
-                </div>
-            `).join('');
-        }
+        chartEl.innerHTML = recent.length === 0
+            ? `<div style="width:100%; text-align:center; color:var(--muted); align-self:center;">עדיין לא בוצעו תרגולים להצגת גרף.</div>`
+            : recent.map(q => `<div class="bar-col"><span class="bar-val">${q.pct}%</span><div class="bar-fill" style="height:${Math.max(6, q.pct)}%;"></div></div>`).join('');
 
         const weak = [...state.words].filter(w => !w.mastered && w.mistakes > 0).sort((a, b) => b.mistakes - a.mistakes).slice(0, 6);
-        const weakEl = document.getElementById('weakWordsList');
-        if (weak.length === 0) {
-            weakEl.innerHTML = `<div style="color:var(--muted); font-size:0.9rem;">עדיין אין מילים עם טעויות רשומות.</div>`;
-        } else {
-            weakEl.innerHTML = weak.map(w => `
-                <div class="word-row">
-                    <span><strong class="word-en">${w.en}</strong> — ${w.he}</span>
-                    <span style="color:var(--danger); font-size:0.85rem; font-weight:700;">${w.mistakes} לחיצות/טעויות</span>
-                </div>
-            `).join('');
-        }
+        document.getElementById('weakWordsList').innerHTML = weak.length === 0
+            ? `<div style="color:var(--muted); font-size:0.9rem;">עדיין אין מילים עם טעויות רשומות.</div>`
+            : weak.map(w => `<div class="word-row"><span><strong class="word-en">${w.en}</strong> — ${w.he}</span><span style="color:var(--danger); font-size:0.85rem; font-weight:700;">${w.mistakes} לחיצות/טעויות</span></div>`).join('');
     }
 
     function saveThreshold() {
         state.settings.threshold = parseInt(document.getElementById('masteryThresholdSelect').value, 10);
-        saveState();
-        rebuildFlashcards();
+        saveState(); rebuildFlashcards();
     }
 
     function exportData() {
         const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
+        a.href = URL.createObjectURL(blob);
         a.download = `english_master_backup_${new Date().toISOString().slice(0,10)}.json`;
         a.click();
     }
@@ -1394,13 +1040,7 @@ Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
         reader.onload = () => {
             try {
                 const parsed = JSON.parse(reader.result);
-                if (parsed.words) {
-                    state = parsed;
-                    if (!state.settings) state.settings = {};
-                    saveState();
-                    loadState();
-                    alert("הנתונים שוחזרו בהצלחה!");
-                }
+                if (parsed.words) { state = parsed; saveState(); loadState(); alert("הנתונים שוחזרו בהצלחה!"); }
             } catch (_) { alert("קובץ גיבוי לא תקין."); }
         };
         reader.readAsText(file);
