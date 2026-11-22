@@ -36,7 +36,6 @@
             line-height: 1.5;
         }
 
-        /* כותרת עליונה */
         .app-header {
             background: var(--card);
             padding: 14px 18px;
@@ -91,7 +90,6 @@
         h2 { font-size: 1.15rem; margin: 0 0 12px 0; color: var(--text); }
         p.sub { font-size: 0.9rem; color: var(--muted); margin: -6px 0 14px 0; }
 
-        /* כפתורים */
         .btn {
             border: none;
             border-radius: 12px;
@@ -113,7 +111,6 @@
         .btn-secondary { background: #e2e8f0; color: var(--text); }
         .btn-sm { padding: 6px 12px; font-size: 0.85rem; border-radius: 8px; }
 
-        /* כרטיסיות שינון */
         .flashcard-box {
             background: linear-gradient(145deg, #ffffff, #f1f5f9);
             border: 2px solid var(--border);
@@ -182,7 +179,6 @@
             margin-bottom: 18px;
         }
 
-        /* רשימת מילים וטאבים פנימיים */
         .pill-tabs {
             display: flex;
             gap: 8px;
@@ -214,7 +210,6 @@
         .word-en { direction: ltr; font-weight: 700; font-size: 1rem; display: inline-block; }
         .word-he { color: var(--muted); font-size: 0.92rem; margin-right: 6px; }
 
-        /* תרגול השלמת משפטים */
         .word-bank {
             direction: ltr;
             background: #f8fafc;
@@ -300,8 +295,7 @@
         .q-feedback.ok { background: var(--success-bg); color: #14532d; }
         .q-feedback.err { background: var(--danger-bg); color: #7f1d1d; }
 
-        /* טפסים וסריקה */
-        input[type="text"], input[type="password"], textarea {
+        input[type="text"], input[type="password"], textarea, select.full-select {
             width: 100%;
             padding: 11px 12px;
             border: 1.5px solid #cbd5e1;
@@ -309,6 +303,7 @@
             font-size: 1rem;
             font-family: inherit;
             margin-bottom: 10px;
+            background: #fff;
         }
         .field-label {
             font-size: 0.9rem;
@@ -328,7 +323,6 @@
             display: block;
         }
 
-        /* סטטיסטיקה */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -369,7 +363,6 @@
         }
         .bar-val { font-size: 0.72rem; font-weight: 700; margin-bottom: 3px; }
 
-        /* בועית תרגום צפה */
         #popover {
             position: fixed;
             bottom: 85px;
@@ -389,7 +382,6 @@
             gap: 10px;
         }
 
-        /* ניווט תחתון */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -565,24 +557,23 @@
     <!-- מסך 5: הגדרות וגיבוי -->
     <section id="screen-settings" class="screen">
         <div class="card">
-            <h2>🔑 הגדרות Gemini API ומודל</h2>
-            <p class="sub">נדרש עבור יצירת משפטים חדשים, תרגום בלחיצה וסריקת תמונות. הנתונים נשמרים אך ורק על המכשיר שלך.</p>
+            <h2>🔑 הגדרות Gemini API ומודל אוטומטי</h2>
+            <p class="sub">האפליקציה שולפת אוטומטית את המודלים הפעילים בחשבון שלך ועוברת אוטומטית למודל חלופי אם יש עומס בגוגל.</p>
             
             <label class="field-label" for="apiKeyInput">מפתח API (API Key):</label>
             <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="direction:ltr;">
 
-            <label class="field-label" for="modelNameInput">שם המודל (Model Name):</label>
-            <input type="text" id="modelNameInput" placeholder="gemini-3.8-flash" style="direction:ltr;">
-            <p class="sub" style="margin-top:-4px; font-size:0.8rem;">ברירת מחדל עדכנית: <code>gemini-3.8-flash</code> (ניתן לשנות בכל עת אם יוצא מודל חדש).</p>
+            <label class="field-label" for="modelSelect">מודל מועדף (נטען מהחשבון שלך):</label>
+            <select id="modelSelect" class="full-select" style="direction:ltr;" onchange="onModelSelectChange()"></select>
 
-            <button class="btn btn-primary" onclick="saveApiSettings()">שמור הגדרות API</button>
-            <div id="apiSavedMsg" style="color:var(--success); font-size:0.9rem; font-weight:700; margin-top:8px; display:none;">✅ ההגדרות נשמרו בהצלחה!</div>
+            <button class="btn btn-primary" onclick="saveAndDiscoverModels()">🔍 שמור ובדוק מודלים זמינים</button>
+            <div id="apiSavedMsg" style="font-size:0.9rem; font-weight:700; margin-top:10px; display:none;"></div>
         </div>
 
         <div class="card">
             <h2>⚙️ הגדרות שליטה במילים</h2>
             <label class="field-label" for="masteryThresholdSelect">כמה הצלחות רצופות מעבירות מילה ל"יודעת"?</label>
-            <select id="masteryThresholdSelect" onchange="saveThreshold()" style="width:100%; padding:10px; border-radius:10px; border:1px solid #cbd5e1; font-size:1rem;">
+            <select id="masteryThresholdSelect" class="full-select" onchange="saveThreshold()">
                 <option value="2">2 הצלחות רצופות</option>
                 <option value="3">3 הצלחות רצופות (מומלץ)</option>
                 <option value="4">4 הצלחות רצופות</option>
@@ -640,9 +631,7 @@
 <script>
     const DEFAULT_MODEL = "gemini-3.8-flash";
 
-    // 67 המילים ההתחלתיות שלכם
     const INITIAL_WORDS = [
-        // רשימה 1 (35 מילים)
         { en: "celebrate", he: "לחגוג" },
         { en: "such", he: "כזה" },
         { en: "rather strange", he: "די מוזר" },
@@ -678,7 +667,6 @@
         { en: "hand out free", he: "לחלק בחינם" },
         { en: "well", he: "טוב" },
         { en: "demonstrate", he: "להדגים" },
-        // תמונה 2 - עמודה שמאלית (14 מילים)
         { en: "plant", he: "צמח" },
         { en: "outdoor", he: "בחוץ" },
         { en: "switching", he: "מחליף / להחליף" },
@@ -693,7 +681,6 @@
         { en: "minds", he: "מוח / נפש" },
         { en: "selection", he: "מבחר" },
         { en: "tour", he: "סיור" },
-        // תמונה 2 - עמודה ימנית + תוספות (18 מילים)
         { en: "protect", he: "להגן" },
         { en: "volunteers", he: "מתנדבים" },
         { en: "square", he: "ריבוע / כיכר העיר" },
@@ -718,7 +705,7 @@
     let state = {
         words: [],
         quizHistory: [],
-        settings: { apiKey: "", modelName: DEFAULT_MODEL, threshold: 3 }
+        settings: { apiKey: "", modelName: DEFAULT_MODEL, availableModels: [], threshold: 3 }
     };
 
     let fcDeck = [];
@@ -734,10 +721,9 @@
         if (raw) {
             state = JSON.parse(raw);
             if (!state.settings) state.settings = {};
-            // שדרוג אוטומטי אם עדיין שמור מודל 2.5 ישן או חסר מודל
+            if (!Array.isArray(state.settings.availableModels)) state.settings.availableModels = [];
             if (!state.settings.modelName || state.settings.modelName === "gemini-2.5-flash") {
                 state.settings.modelName = DEFAULT_MODEL;
-                saveState();
             }
         } else {
             state.words = INITIAL_WORDS.map((w, i) => ({
@@ -748,19 +734,96 @@
                 mistakes: 0,
                 mastered: false
             }));
-            state.settings = { apiKey: "", modelName: DEFAULT_MODEL, threshold: 3 };
+            state.settings = { apiKey: "", modelName: DEFAULT_MODEL, availableModels: [], threshold: 3 };
             saveState();
         }
         document.getElementById('apiKeyInput').value = state.settings.apiKey || "";
-        document.getElementById('modelNameInput').value = state.settings.modelName || DEFAULT_MODEL;
         document.getElementById('masteryThresholdSelect').value = state.settings.threshold || 3;
+        renderModelDropdown();
         rebuildFlashcards();
         updateHeader();
+
+        // אם יש כבר מפתח שמור אבל טרם נטענה רשימת מודלים, נמשוך אותה בשקט ברקע
+        if (state.settings.apiKey && state.settings.availableModels.length === 0) {
+            discoverModelsFromGoogle(state.settings.apiKey).catch(() => {});
+        }
     }
 
     function saveState() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         updateHeader();
+    }
+
+    function renderModelDropdown() {
+        const sel = document.getElementById('modelSelect');
+        const list = state.settings.availableModels && state.settings.availableModels.length > 0
+            ? state.settings.availableModels
+            : [state.settings.modelName || DEFAULT_MODEL];
+
+        sel.innerHTML = list.map(m => `<option value="${m}">${m}</option>`).join('');
+        if (list.includes(state.settings.modelName)) {
+            sel.value = state.settings.modelName;
+        } else {
+            state.settings.modelName = list[0];
+            sel.value = list[0];
+        }
+    }
+
+    function onModelSelectChange() {
+        state.settings.modelName = document.getElementById('modelSelect').value;
+        saveState();
+    }
+
+    // משיכת המודלים הזמינים בפועל עבור מפתח ה-API ישירות מ-ListModels של גוגל
+    async function discoverModelsFromGoogle(key) {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error("מפתח API שגוי או שגיאת רשת:\n" + err);
+        }
+        const data = await res.json();
+        const valid = (data.models || [])
+            .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+            .map(m => m.name.replace(/^models\//, ''))
+            .filter(id => id.startsWith("gemini-") && !/embedding|imagen|veo|tts|audio|live|aqa|robotics|computer-use|learnlm/i.test(id));
+
+        // תעדוף מודלי flash מהירים בראש הרשימה
+        valid.sort((a, b) => {
+            const aFlash = a.includes("flash") ? 0 : 1;
+            const bFlash = b.includes("flash") ? 0 : 1;
+            if (aFlash !== bFlash) return aFlash - bFlash;
+            return b.localeCompare(a);
+        });
+
+        if (valid.length > 0) {
+            state.settings.availableModels = valid;
+            if (!valid.includes(state.settings.modelName)) {
+                state.settings.modelName = valid[0];
+            }
+            saveState();
+            renderModelDropdown();
+        }
+        return valid;
+    }
+
+    async function saveAndDiscoverModels() {
+        const key = document.getElementById('apiKeyInput').value.trim();
+        state.settings.apiKey = key;
+        saveState();
+
+        const msg = document.getElementById('apiSavedMsg');
+        msg.style.display = 'block';
+        msg.style.color = 'var(--primary)';
+        msg.textContent = "⏳ בודק חיבור ושולף מודלים זמינים מגוגל...";
+
+        try {
+            const models = await discoverModelsFromGoogle(key);
+            msg.style.color = 'var(--success)';
+            msg.textContent = `✅ החיבור תקין! נמצאו ${models.length} מודלים פעילים. נבחר: ${state.settings.modelName}`;
+        } catch (err) {
+            msg.style.color = 'var(--danger)';
+            msg.textContent = "❌ " + err.message;
+        }
     }
 
     function updateHeader() {
@@ -771,7 +834,6 @@
         document.getElementById('countMastered').textContent = masteredCount;
     }
 
-    // ניווט מסכים
     function switchScreen(name, btnEl) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(`screen-${name}`).classList.add('active');
@@ -782,7 +844,6 @@
         if (name === 'stats') { renderStats(); }
     }
 
-    // הקראה קולית (Text-to-Speech)
     function speakText(text) {
         if (!('speechSynthesis' in window) || !text) return;
         window.speechSynthesis.cancel();
@@ -903,8 +964,13 @@
         rebuildFlashcards();
     }
 
-    // --- קריאה ל-Gemini API ---
-    async function callGemini(promptText, base64Image = null, mimeType = null) {
+    // --- קריאה חכמה ל-Gemini API עם גילוי מודלים אוטומטי ומעקף עומסים (503/404) ---
+    function extractJson(rawText) {
+        const cleaned = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+        return JSON.parse(cleaned);
+    }
+
+    async function callGemini(promptText, base64Image = null, mimeType = null, loaderEl = null) {
         const key = (state.settings.apiKey || "").trim();
         if (!key) {
             alert("יש להזין מפתח Gemini API במסך 'הגדרות' לפני שימוש בפעולה זו.");
@@ -912,30 +978,70 @@
             throw new Error("Missing API Key");
         }
 
-        // ניקוי אוטומטי של הקידומת models/ אם המשתמש הדביק אותה בטעות
-        const model = ((state.settings.modelName || DEFAULT_MODEL).trim()).replace(/^models\//, '');
+        // אם עדיין אין רשימת מודלים מאומתת מהחשבון, נשלוף אותה כעת
+        if (!state.settings.availableModels || state.settings.availableModels.length === 0) {
+            try { await discoverModelsFromGoogle(key); } catch (_) {}
+        }
+
+        const preferred = ((state.settings.modelName || DEFAULT_MODEL).trim()).replace(/^models\//, '');
+        const others = (state.settings.availableModels || []).filter(m => m !== preferred);
+        // ננסה את המודל הנבחר, ואם עמוס (503) או לא קיים (404) נעבור אוטומטית לשאר המודלים הפעילים בחשבון
+        const queue = [preferred, ...others.slice(0, 4), preferred];
 
         const parts = [{ text: promptText }];
         if (base64Image) {
             parts.push({ inline_data: { mime_type: mimeType, data: base64Image } });
         }
 
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts }],
-                generationConfig: { responseMimeType: "application/json", temperature: 0.7 }
-            })
-        });
+        let lastError = "";
+        for (let i = 0; i < queue.length; i++) {
+            const model = queue[i];
+            if (i > 0 && loaderEl) {
+                loaderEl.textContent = `⏳ השרת עמוס, מנסה אוטומטית מודל חלופי (${model})...`;
+            }
 
-        if (!res.ok) {
-            const errText = await res.text();
-            throw new Error("שגיאת חיבור ל-Gemini API (בדוק את מפתח ה-API או שם המודל בהגדרות):\n" + errText);
+            const res = await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/$](https://generativelanguage.googleapis.com/v1beta/models/$){model}:generateContent?key=${key}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts }],
+                    generationConfig: { responseMimeType: "application/json", temperature: 0.7 }
+                })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const textOut = data.candidates[0].content.parts[0].text;
+                // אם הצליח במודל חלופי כי הקודם החזיר 404, נשמור את המודל התקין להמשך
+                if (state.settings.modelName !== model && i > 0) {
+                    state.settings.modelName = model;
+                    saveState();
+                    renderModelDropdown();
+                }
+                return extractJson(textOut);
+            }
+
+            lastError = await res.text();
+
+            // אם קיבלנו 404 ועדיין לא שלפנו מודלים חדשים, נשלוף עכשיו ונוסיף לתור
+            if (res.status === 404 && others.length === 0) {
+                try {
+                    const fresh = await discoverModelsFromGoogle(key);
+                    fresh.slice(0, 4).forEach(m => { if (!queue.includes(m)) queue.push(m); });
+                } catch (_) {}
+                continue;
+            }
+
+            // במקרה של עומס (503 / 429) או מודל לא נתמך (404 / 400), נמתין רגע ונעבור למודל הבא בתור
+            if (res.status === 503 || res.status === 429 || res.status === 404 || res.status === 400) {
+                await new Promise(r => setTimeout(r, 1200));
+                continue;
+            } else {
+                break;
+            }
         }
-        const data = await res.json();
-        const textOut = data.candidates[0].content.parts[0].text;
-        return JSON.parse(textOut);
+
+        throw new Error("כל המודלים הזמינים עמוסים כרגע, נסי שוב בעוד מספר שניות.\n" + lastError);
     }
 
     // --- מסך 2: תרגול משפטים דינמי (עד 12 מילים) ---
@@ -949,9 +1055,11 @@
         pool.sort((a, b) => (b.mistakes - a.mistakes) || (a.streak - b.streak) || (Math.random() - 0.5));
         const selected = pool.slice(0, 12);
 
+        const loaderEl = document.getElementById('practiceLoader');
         document.getElementById('practiceArea').style.display = 'none';
         document.getElementById('scoreBanner').style.display = 'none';
-        document.getElementById('practiceLoader').style.display = 'block';
+        loaderEl.textContent = "⏳ מבקש מ-Gemini להכין משפטים חדשים במיוחד בשבילך...";
+        loaderEl.style.display = 'block';
 
         try {
             const wordsPayload = selected.map(w => ({ id: w.id, en: w.en, he: w.he }));
@@ -963,13 +1071,13 @@ Rules:
 3. Also provide "glosses": a dictionary object mapping EVERY single lowercase word used in "before" and "after" (stripped of punctuation) to its concise Hebrew translation in this exact context.
 Return a JSON array of objects with keys: "id" (number), "answer" (exact string from input 'en'), "before" (string), "after" (string), "glosses" (object).`;
 
-            const generated = await callGemini(prompt);
+            const generated = await callGemini(prompt, null, null, loaderEl);
             activeQuiz = generated;
             renderPracticeQuiz();
         } catch (err) {
             if (err.message !== "Missing API Key") alert(err.message);
         } finally {
-            document.getElementById('practiceLoader').style.display = 'none';
+            loaderEl.style.display = 'none';
         }
     }
 
@@ -1136,7 +1244,9 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
     async function handleImageUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
-        document.getElementById('scanStatus').style.display = 'block';
+        const scanStatus = document.getElementById('scanStatus');
+        scanStatus.textContent = "⏳ מפענח את התמונה עם Gemini...";
+        scanStatus.style.display = 'block';
         document.getElementById('scanPreview').style.display = 'none';
 
         try {
@@ -1145,7 +1255,7 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
 Fix obvious spelling typos in English if any. If Hebrew translations are written next to them, use them; otherwise translate each English word/phrase accurately to concise Hebrew. Ignore proper names of people.
 Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
 
-            pendingScanned = await callGemini(prompt, b64, file.type || "image/jpeg");
+            pendingScanned = await callGemini(prompt, b64, file.type || "image/jpeg", scanStatus);
             const listEl = document.getElementById('scannedList');
             listEl.innerHTML = pendingScanned.map((w, i) => `
                 <div class="word-row">
@@ -1157,7 +1267,7 @@ Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
         } catch (err) {
             if (err.message !== "Missing API Key") alert("שגיאה בפענוח התמונה: " + err.message);
         } finally {
-            document.getElementById('scanStatus').style.display = 'none';
+            scanStatus.style.display = 'none';
             e.target.value = "";
         }
     }
@@ -1262,18 +1372,6 @@ Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
         }
     }
 
-    // --- מסך 5: הגדרות וגיבוי ---
-    function saveApiSettings() {
-        state.settings.apiKey = document.getElementById('apiKeyInput').value.trim();
-        const rawModel = document.getElementById('modelNameInput').value.trim().replace(/^models\//, '');
-        state.settings.modelName = rawModel || DEFAULT_MODEL;
-        document.getElementById('modelNameInput').value = state.settings.modelName;
-        saveState();
-        const msg = document.getElementById('apiSavedMsg');
-        msg.style.display = 'block';
-        setTimeout(() => msg.style.display = 'none', 3000);
-    }
-
     function saveThreshold() {
         state.settings.threshold = parseInt(document.getElementById('masteryThresholdSelect').value, 10);
         saveState();
@@ -1299,9 +1397,6 @@ Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
                 if (parsed.words) {
                     state = parsed;
                     if (!state.settings) state.settings = {};
-                    if (!state.settings.modelName || state.settings.modelName === "gemini-2.5-flash") {
-                        state.settings.modelName = DEFAULT_MODEL;
-                    }
                     saveState();
                     loadState();
                     alert("הנתונים שוחזרו בהצלחה!");
