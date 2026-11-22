@@ -310,6 +310,13 @@
             font-family: inherit;
             margin-bottom: 10px;
         }
+        .field-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
         .upload-zone {
             border: 2px dashed var(--primary);
             background: var(--primary-light);
@@ -318,6 +325,7 @@
             text-align: center;
             cursor: pointer;
             margin-bottom: 14px;
+            display: block;
         }
 
         /* סטטיסטיקה */
@@ -557,16 +565,23 @@
     <!-- מסך 5: הגדרות וגיבוי -->
     <section id="screen-settings" class="screen">
         <div class="card">
-            <h2>🔑 הגדרת מפתח Gemini API</h2>
-            <p class="sub">נדרש עבור יצירת משפטים חדשים, תרגום בלחיצה וסריקת תמונות. המפתח נשמר אך ורק על המכשיר שלך.</p>
+            <h2>🔑 הגדרות Gemini API ומודל</h2>
+            <p class="sub">נדרש עבור יצירת משפטים חדשים, תרגום בלחיצה וסריקת תמונות. הנתונים נשמרים אך ורק על המכשיר שלך.</p>
+            
+            <label class="field-label" for="apiKeyInput">מפתח API (API Key):</label>
             <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="direction:ltr;">
-            <button class="btn btn-primary" onclick="saveApiKey()">שמור מפתח API</button>
-            <div id="apiSavedMsg" style="color:var(--success); font-size:0.9rem; font-weight:700; margin-top:8px; display:none;">✅ המפתח נשמר בהצלחה!</div>
+
+            <label class="field-label" for="modelNameInput">שם המודל (Model Name):</label>
+            <input type="text" id="modelNameInput" placeholder="gemini-3.8-flash" style="direction:ltr;">
+            <p class="sub" style="margin-top:-4px; font-size:0.8rem;">ברירת מחדל עדכנית: <code>gemini-3.8-flash</code> (ניתן לשנות בכל עת אם יוצא מודל חדש).</p>
+
+            <button class="btn btn-primary" onclick="saveApiSettings()">שמור הגדרות API</button>
+            <div id="apiSavedMsg" style="color:var(--success); font-size:0.9rem; font-weight:700; margin-top:8px; display:none;">✅ ההגדרות נשמרו בהצלחה!</div>
         </div>
 
         <div class="card">
             <h2>⚙️ הגדרות שליטה במילים</h2>
-            <label style="font-size:0.95rem; font-weight:600; display:block; margin-bottom:6px;">כמה הצלחות רצופות מעבירות מילה ל"יודעת"?</label>
+            <label class="field-label" for="masteryThresholdSelect">כמה הצלחות רצופות מעבירות מילה ל"יודעת"?</label>
             <select id="masteryThresholdSelect" onchange="saveThreshold()" style="width:100%; padding:10px; border-radius:10px; border:1px solid #cbd5e1; font-size:1rem;">
                 <option value="2">2 הצלחות רצופות</option>
                 <option value="3">3 הצלחות רצופות (מומלץ)</option>
@@ -623,7 +638,9 @@
 </nav>
 
 <script>
-    // 67 המילים ההתחלתיות שלכם (מהרשימה הראשונה + התמונה החדשה בשתי העמודות)
+    const DEFAULT_MODEL = "gemini-3.8-flash";
+
+    // 67 המילים ההתחלתיות שלכם
     const INITIAL_WORDS = [
         // רשימה 1 (35 מילים)
         { en: "celebrate", he: "לחגוג" },
@@ -700,15 +717,15 @@
     const STORAGE_KEY = "english_master_app_v1";
     let state = {
         words: [],
-        quizHistory: [], // { date, score, total, pct }
-        settings: { apiKey: "", threshold: 3 }
+        quizHistory: [],
+        settings: { apiKey: "", modelName: DEFAULT_MODEL, threshold: 3 }
     };
 
     let fcDeck = [];
     let fcIndex = 0;
     let fcEnToHe = true;
     let currentListTab = 'active';
-    let activeQuiz = []; // { before, after, answer, wordGlosses }
+    let activeQuiz = [];
     let pendingScanned = [];
     let popTimer = null;
 
@@ -716,6 +733,12 @@
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
             state = JSON.parse(raw);
+            if (!state.settings) state.settings = {};
+            // שדרוג אוטומטי אם עדיין שמור מודל 2.5 ישן או חסר מודל
+            if (!state.settings.modelName || state.settings.modelName === "gemini-2.5-flash") {
+                state.settings.modelName = DEFAULT_MODEL;
+                saveState();
+            }
         } else {
             state.words = INITIAL_WORDS.map((w, i) => ({
                 id: Date.now() + i,
@@ -725,9 +748,11 @@
                 mistakes: 0,
                 mastered: false
             }));
+            state.settings = { apiKey: "", modelName: DEFAULT_MODEL, threshold: 3 };
             saveState();
         }
         document.getElementById('apiKeyInput').value = state.settings.apiKey || "";
+        document.getElementById('modelNameInput').value = state.settings.modelName || DEFAULT_MODEL;
         document.getElementById('masteryThresholdSelect').value = state.settings.threshold || 3;
         rebuildFlashcards();
         updateHeader();
@@ -887,12 +912,15 @@
             throw new Error("Missing API Key");
         }
 
+        // ניקוי אוטומטי של הקידומת models/ אם המשתמש הדביק אותה בטעות
+        const model = ((state.settings.modelName || DEFAULT_MODEL).trim()).replace(/^models\//, '');
+
         const parts = [{ text: promptText }];
         if (base64Image) {
             parts.push({ inline_data: { mime_type: mimeType, data: base64Image } });
         }
 
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -903,7 +931,7 @@
 
         if (!res.ok) {
             const errText = await res.text();
-            throw new Error("שגיאת חיבור ל-Gemini API: " + errText);
+            throw new Error("שגיאת חיבור ל-Gemini API (בדוק את מפתח ה-API או שם המודל בהגדרות):\n" + errText);
         }
         const data = await res.json();
         const textOut = data.candidates[0].content.parts[0].text;
@@ -918,7 +946,6 @@
             return;
         }
 
-        // תעדוף חכם: קודם מילים עם טעויות ורצף נמוך, בתוספת ערבוב קל, עד 12 מילים
         pool.sort((a, b) => (b.mistakes - a.mistakes) || (a.streak - b.streak) || (Math.random() - 0.5));
         const selected = pool.slice(0, 12);
 
@@ -1005,7 +1032,6 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
         const qObj = activeQuiz[qIdx];
         let heTrans = (qObj && qObj.glosses && qObj.glosses[clean]) ? qObj.glosses[clean] : null;
 
-        // אם המילה לא הופיעה במילון המקומי של השאלה, נבקש תרגום מהיר מ-Gemini
         if (!heTrans && state.settings.apiKey) {
             try {
                 const res = await callGemini(`Translate the English word "${clean}" to Hebrew in the context of: "${qObj.before} ${qObj.answer} ${qObj.after}". Return JSON: {"he": "תרגום קצר"}`);
@@ -1013,7 +1039,6 @@ Return a JSON array of objects with keys: "id" (number), "answer" (exact string 
             } catch (_) { heTrans = "מתרגם..."; }
         }
 
-        // הוספה אוטומטית למאגר המילים לתרגול (או איפוס רצף אם כבר קיימת)
         let existing = state.words.find(w => w.en.toLowerCase() === clean);
         if (existing) {
             existing.mastered = false;
@@ -1238,8 +1263,11 @@ Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
     }
 
     // --- מסך 5: הגדרות וגיבוי ---
-    function saveApiKey() {
+    function saveApiSettings() {
         state.settings.apiKey = document.getElementById('apiKeyInput').value.trim();
+        const rawModel = document.getElementById('modelNameInput').value.trim().replace(/^models\//, '');
+        state.settings.modelName = rawModel || DEFAULT_MODEL;
+        document.getElementById('modelNameInput').value = state.settings.modelName;
         saveState();
         const msg = document.getElementById('apiSavedMsg');
         msg.style.display = 'block';
@@ -1270,6 +1298,10 @@ Return a JSON array of objects: [{"en": "word", "he": "תרגום"}].`;
                 const parsed = JSON.parse(reader.result);
                 if (parsed.words) {
                     state = parsed;
+                    if (!state.settings) state.settings = {};
+                    if (!state.settings.modelName || state.settings.modelName === "gemini-2.5-flash") {
+                        state.settings.modelName = DEFAULT_MODEL;
+                    }
                     saveState();
                     loadState();
                     alert("הנתונים שוחזרו בהצלחה!");
